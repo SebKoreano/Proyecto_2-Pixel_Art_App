@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import numpy as np
 
+#Probando
+
 class PaintxelApp:
     def __init__(self, root):
         self.root = root
