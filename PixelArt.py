@@ -7,7 +7,7 @@ import pickle
 class PaintApp:
 
     #En esta funcion se definen todos los parametros de la clase
-    def __init__(self, root):
+    def __init__(self, root,username,estado):
         self.root = root
         self.root.title("PaintApp")
         self.pixelSize = 15
@@ -25,6 +25,8 @@ class PaintApp:
         self.asciiSimbols = [' ','.', ':', '-', '=', '¡', '&', '$', '%', '@']
         self.colorActual = 7 #Inicia con el color en blanco
         self.cuadros = {}
+        self.username = username
+        self.estado = estado
         self.gridInicial()
         self.creaMenu()
         self.canvas.bind("<B1-Motion>", self.paint)
@@ -52,6 +54,7 @@ class PaintApp:
         viewmenu = tk.Menu(menubar, tearoff=0)
         viewmenu.add_command(label="ASCII-Art", command=self.asciiArt)
         viewmenu.add_command(label="Ver matriz numérica", command=self.verMatrix)
+        viewmenu.add_command(label="Info", command=self.verInfo)
         menubar.add_cascade(label="Ver", menu=viewmenu)
 
         colormenu = tk.Menu(menubar, tearoff=0)
@@ -83,6 +86,7 @@ class PaintApp:
             self.matrix[y, x] = self.colorActual #modifica la matriz con el numero nuevo de color
             color = self.colors[self.colorActual] #agarra el color de la lista de colores
             self.canvas.itemconfig(self.cuadros[(x, y)], fill=color) #configura el cuadro correspondiente con el color
+            self.estado = "en proceso"
 
     #esta funcion guarda los archivos con pickle
     def guardaImagenPickle(self):
@@ -91,6 +95,7 @@ class PaintApp:
             try:
                 with open(rutaArchivo, 'wb') as file: #abre el archivo con wb(modo binario)
                     pickle.dump(self.matrix, file) #guarda la matriz con .dump en el la ruta 
+                self.estado = "terminado"
             except Exception as e:
                 messagebox.showerror("Error", str(e)) #ventana de error
 
@@ -192,8 +197,27 @@ class PaintApp:
             texto.insert(tk.END, textoMatriz)
 
         texto.config(state=tk.DISABLED) #deshabilita la edicion del widget
+        
+    def verInfo(self):
+        infoWindow = Toplevel(self.root)
+        infoWindow.title("Info")
+        infoWindow.geometry("200x100")
+        tk.Label(infoWindow, text=f"Nombre: {self.username}").pack(padx=10, pady=10)
+        tk.Label(infoWindow, text=f"Estado: {self.estado}").pack(padx=10, pady=10)
 
-#se establece e inicia una clase paintapp
-principal = tk.Tk()
-app = PaintApp(principal)
-principal.mainloop()
+def empezar(user, previa):
+    username = user
+    estado = "creado"
+    previa.destroy()
+        
+    root = tk.Tk()
+    app = PaintApp(root,username,estado)
+    root.mainloop()
+    
+previa = tk.Tk()
+previa.title("Enter your name")
+tk.Label(previa, text="Name:").pack(padx=10, pady=10)
+entry = tk.Entry(previa)
+entry.pack(padx=10, pady=10)
+tk.Button(previa, text="Aceptar", command=lambda: empezar(entry.get(), previa)).pack(pady=10)
+previa.mainloop()
