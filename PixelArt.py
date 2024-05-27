@@ -168,29 +168,30 @@ class PaintApp:
         ventanaASCII = Toplevel(self.root)
         ventanaASCII.title("ASCII Art")
         ventanaASCII.geometry("700x710")
-        texto = Text(ventanaASCII, width=100, height=100, font=("Courier", 8))
-        texto.pack(expand=True, fill=tk.BOTH)
-        texto.config(state=tk.NORMAL)
+        texto = Text(ventanaASCII, width=100, height=100, font=("Courier", 8)) #crea un widget de texto dentro de la ventana secundaria
+        texto.pack(expand=True, fill=tk.BOTH) #esto empaqueta el texto con la opcion de que se expanda
+        texto.config(state=tk.NORMAL) #permite la edición del widget de texto para poder insertar el arte ASCII
 
-        for row in self.matrix:
-            ascii_row = ' '.join(self.asciiSimbols[val] for val in row) + '\n'
-            texto.insert(tk.END, ascii_row)
+        for row in self.matrix: #itera por cada fila de la matriz
+            textoASCII = ' '.join(self.asciiSimbols[val] for val in row) + '\n' #crea una fila de caracteres usando la lista de simbolos mediante iteracion
+            texto.insert(tk.END, textoASCII) #inserta el texto en el widget
 
-        texto.config(state=tk.DISABLED)
+        texto.config(state=tk.DISABLED) #deshabilita la edicion del widget para que quede de solo lectura
 
+    #esta funcion se encarga de mostrar la matriz
     def verMatrix(self):
         ventanaMatriz = Toplevel(self.root)
         ventanaMatriz.title("Matriz Numérica")
         ventanaMatriz.geometry("700x710")
-        texto = Text(ventanaMatriz, width=100, height=100, font=("Courier", 8))
+        texto = Text(ventanaMatriz, width=100, height=100, font=("Courier", 8)) #crea el widget de texto
         texto.pack(expand=True, fill=tk.BOTH)
         texto.config(state=tk.NORMAL)
 
-        for row in self.matrix:
-            numeric_row = ' '.join(map(str, row)) + '\n'
-            texto.insert(tk.END, numeric_row)
+        for row in self.matrix: #itera sobre las filas de la matriz
+            textoMatriz = ' '.join(map(str, row)) + '\n' #esta linea mapea cada elemento de la matriz y lo convierte en str, para despues añadirlo a la variable
+            texto.insert(tk.END, textoMatriz)
 
-        texto.config(state=tk.DISABLED)
+        texto.config(state=tk.DISABLED) #deshabilita la edicion del widget
 
 #se establece e inicia una clase paintapp
 principal = tk.Tk()
