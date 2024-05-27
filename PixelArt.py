@@ -3,7 +3,6 @@ from tkinter import filedialog, messagebox, Toplevel, Text
 import numpy as np
 import pickle
 
-#prueba
 """Esta clase contiene los atributos de la ventana paint y las acciones del menu"""
 class PaintApp:
 
