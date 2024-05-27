@@ -89,7 +89,7 @@ class PaintApp:
             self.estado = "en proceso"
 
     #esta funcion guarda los archivos con pickle
-    def guardaImagenPickle(self):
+    """def guardaImagenPickle(self):
         rutaArchivo = filedialog.asksaveasfilename(defaultextension=".pkl") #abre un dialogo que le pregunta al usuario donde y con que nombre lo quiere guardar
         if rutaArchivo: #revisa si la ruta no esta vacia
             try:
@@ -108,8 +108,29 @@ class PaintApp:
                     self.matrix = pickle.load(file) #carga el archivo
                 self.updateCanvas() #actualiza el canvas con la matrix del archivo
             except Exception as e:
+                messagebox.showerror("Error", str(e))"""
+
+    def guardaImagenPickle(self):
+        rutaArchivo = filedialog.asksaveasfilename(defaultextension=".pkl")
+        if rutaArchivo:
+            try:
+                with open(rutaArchivo, 'wb') as file:
+                    pickle.dump(self, file)
+                self.estado = "terminado"
+            except Exception as e:
                 messagebox.showerror("Error", str(e))
 
+    def cargaImagenPickle(self):
+        rutaArchivo = filedialog.askopenfilename(filetypes=[("Pickle files", "*.pkl")])
+        if rutaArchivo:
+            try:
+                with open(rutaArchivo, 'rb') as file:
+                    app = pickle.load(file)
+                self.root.destroy()
+                app.root.mainloop()
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+                
     #esta funcion resetea el dibujo
     def cerrarImagen(self):
         self.matrix = np.zeros((self.gridSize, self.gridSize), dtype=int) #reestablece la matrix con todos ceros
