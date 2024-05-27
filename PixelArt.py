@@ -29,8 +29,10 @@ class PaintApp:
         self.estado = estado
         self.gridInicial()
         self.creaMenu()
+        self.formaActual = None
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<Button-1>", self.paint)
+        self.canvas.bind("<Button-3>", self.right_click)
 
     def creaMenu(self):
         menubar = tk.Menu(self.root)
@@ -64,6 +66,11 @@ class PaintApp:
             colormenu.add_command(label=colorLabel, command=lambda c=i: self.setColor(c))
         menubar.add_cascade(label="Colores", menu=colormenu)
 
+        formsmenu = tk.Menu(menubar, tearoff=0)
+        formsmenu.add_command(label="Cuadrado", command=lambda: self.setForma("cuadrado"))
+        formsmenu.add_command(label="Círculo", command=lambda: self.setForma("circulo"))
+        menubar.add_cascade(label="Formas", menu=formsmenu)
+        
         self.root.config(menu=menubar)
 
     #Esta funcion dibuja el grid cuando se inicia la partida
@@ -204,6 +211,36 @@ class PaintApp:
         infoWindow.geometry("200x100")
         tk.Label(infoWindow, text=f"Nombre: {self.username}").pack(padx=10, pady=10)
         tk.Label(infoWindow, text=f"Estado: {self.estado}").pack(padx=10, pady=10)
+        
+    def setForma(self, forma):
+        self.formaActual = forma
+
+    def right_click(self, event):
+        if self.formaActual == "cuadrado":
+            self.dibujarCuadrado(event.x, event.y)
+        elif self.formaActual == "circulo":
+            self.dibujarCirculo(event.x, event.y)
+
+    def dibujarCuadrado(self, x, y):
+        center_x, center_y = x // self.pixelSize, y // self.pixelSize
+        size = self.gridSize // 12  
+        color_num = self.colorActual
+        for dy in range(-size, size):
+            for dx in range(-size, size):
+                nx, ny = center_x + dx, center_y + dy
+                if 0 <= nx < self.gridSize and 0 <= ny < self.gridSize:
+                    self.matrix[ny, nx] = color_num
+        self.updateCanvas()
+
+    def dibujarCirculo(self, x, y):
+        center_x, center_y = x // self.pixelSize, y // self.pixelSize
+        radius = self.gridSize // 12  
+        color_num = self.colorActual
+        for ny in range(self.gridSize):
+            for nx in range(self.gridSize):
+                if (nx - center_x) ** 2 + (ny - center_y) ** 2 <= radius ** 2:
+                    self.matrix[ny, nx] = color_num
+        self.updateCanvas()
 
 def empezar(user, previa):
     username = user
