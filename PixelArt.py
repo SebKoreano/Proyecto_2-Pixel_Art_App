@@ -32,7 +32,7 @@ class PaintApp:
         self.formaActual = None
         self.canvas.bind("<B1-Motion>", self.paint)
         self.canvas.bind("<Button-1>", self.paint)
-        self.canvas.bind("<Button-3>", self.right_click)
+        self.canvas.bind("<Button-3>", self.clickDerecho)
 
     def creaMenu(self):
         menubar = tk.Menu(self.root)
@@ -87,8 +87,8 @@ class PaintApp:
                 self.cuadros[(x, y)] = rect #utiliza (x,y) para guardar el cuadro en el diccionario
 
     #Esta funcion maneja el cambio de colores
-    def paint(self, event):
-        x, y = event.x // self.pixelSize, event.y // self.pixelSize #agarra las coordenadas del click y las reduce al size de los pixeles, algo asi como un mapeo
+    def paint(self, evento):
+        x, y = evento.x // self.pixelSize, evento.y // self.pixelSize #agarra las coordenadas del click y las reduce al size de los pixeles, algo asi como un mapeo
         if 0 <= x < self.gridSize and 0 <= y < self.gridSize: #verifica que el click este dentro del grid
             self.matrix[y, x] = self.colorActual #modifica la matriz con el numero nuevo de color
             color = self.colors[self.colorActual] #agarra el color de la lista de colores
@@ -204,52 +204,59 @@ class PaintApp:
             texto.insert(tk.END, textoMatriz)
 
         texto.config(state=tk.DISABLED) #deshabilita la edicion del widget
-        
+    
+    #Esta funcion se encarga de mostrar informacion con respecto a la pestaña de dibujo
     def verInfo(self):
         infoWindow = Toplevel(self.root)
         infoWindow.title("Info")
         infoWindow.geometry("200x100")
         tk.Label(infoWindow, text=f"Nombre: {self.username}").pack(padx=10, pady=10)
         tk.Label(infoWindow, text=f"Estado: {self.estado}").pack(padx=10, pady=10)
-        
+    
+    #Este es un setter para el parametro forma
     def setForma(self, forma):
         self.formaActual = forma
 
-    def right_click(self, event):
+    #Esta funcion es un filtro de la funcion que va a ejecutar el click derecho
+    def clickDerecho(self, evento):
         if self.formaActual == "cuadrado":
-            self.dibujarCuadrado(event.x, event.y)
+            self.dibujarCuadrado(evento.x, evento.y) #pasa las coordenadas del click a la funcion cuadrado
         elif self.formaActual == "circulo":
-            self.dibujarCirculo(event.x, event.y)
+            self.dibujarCirculo(evento.x, evento.y) #pasa las coordenadas del click a la funcion circulo
 
+    #Esta funcion se encarga de dibujar un cuadrado en el area indicada
     def dibujarCuadrado(self, x, y):
-        center_x, center_y = x // self.pixelSize, y // self.pixelSize
-        size = self.gridSize // 12  
-        color_num = self.colorActual
-        for dy in range(-size, size):
-            for dx in range(-size, size):
-                nx, ny = center_x + dx, center_y + dy
-                if 0 <= nx < self.gridSize and 0 <= ny < self.gridSize:
-                    self.matrix[ny, nx] = color_num
-        self.updateCanvas()
+        centroX, centroY = x // self.pixelSize, y // self.pixelSize #Esto convierte las coordenadas del click en coordenadas del canvas y las guarda como centro
+        size = self.gridSize // 12  #Se usa gridsize para definir el tamaño del cuadrado
+        #print(size)
+        color = self.colorActual #se settea el color actual 
+        for dy in range(-size, size): #itera sobre la colunma desde -size hasta size para crear el cuadrado
+            for dx in range(-size, size): #itera sobre la fila desde -size hasta size para crear el cuadrado
+                nx, ny = centroX + dx, centroY + dy #establece donde va a pintar el pixel
+                if 0 <= nx < self.gridSize and 0 <= ny < self.gridSize: #verifica que este dentro de los limites
+                    self.matrix[ny, nx] = color #cambia el color del pixel
+        self.updateCanvas() #actualiza el canvas 
 
+    #Esta funcion se encarga de dibujar un circulo en el area indicada
     def dibujarCirculo(self, x, y):
-        center_x, center_y = x // self.pixelSize, y // self.pixelSize
-        radius = self.gridSize // 12  
-        color_num = self.colorActual
-        for ny in range(self.gridSize):
-            for nx in range(self.gridSize):
-                if (nx - center_x) ** 2 + (ny - center_y) ** 2 <= radius ** 2:
-                    self.matrix[ny, nx] = color_num
+        centroX, centroY = x // self.pixelSize, y // self.pixelSize #Esto convierte las coordenadas del click en coordenadas del canvas y las guarda como centro
+        radius = self.gridSize // 12   #Se usa gridsize para definir el radio del circulo
+        color = self.colorActual #se settea el color actual 
+        for ny in range(self.gridSize): #itera sobre la colunma del canvas
+            for nx in range(self.gridSize): #itera sobre la fila del canvas
+                if (nx - centroX) ** 2 + (ny - centroY) ** 2 <= radius ** 2: #esto verifica que las coordenas esten dentro del circulo mediante la funcion 
+#                                                                             matematica del circulo en un plano cartesiano (x-centrox)**2+(y-centroy)**2=r**2
+                    self.matrix[ny, nx] = color #si el if anterior es verdadero establece el color de ese pixel
         self.updateCanvas()
 
+#Esta funcion ejecuta la aplicacion principal
 def empezar(user, previa):
-    username = user
-    estado = "creado"
-    previa.destroy()
+    
+    previa.destroy() #destruye la ventana previa
         
     root = tk.Tk()
-    app = PaintApp(root,username,estado)
-    root.mainloop()
+    app = PaintApp(root,user,"creado") #crea el objeto app
+    root.mainloop() #ejecuta la ventana de app
     
 previa = tk.Tk()
 previa.title("Enter your name")
