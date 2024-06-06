@@ -9,7 +9,7 @@ class editor:
     #En esta funcion se definen todos los parametros de la clase
     def __init__(self, root,username,estado):
         self.root = root
-        self.root.title("PaintApp")
+        self.root.title("Pixel Art - App")
         self.pixelSize = 15
         self.minPixelSize = 15
         self.maxPixelSize = 50
