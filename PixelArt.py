@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 
 """Esta clase contiene los atributos de la ventana paint y las acciones del menu"""
-class PaintApp:
+class editor:
 
     #En esta funcion se definen todos los parametros de la clase
     def __init__(self, root,username,estado):
@@ -255,7 +255,7 @@ def empezar(user, previa):
     previa.destroy() #destruye la ventana previa
         
     root = tk.Tk()
-    app = PaintApp(root,user,"creado") #crea el objeto app
+    app = editor(root,user,"creado") #crea el objeto editor
     root.mainloop() #ejecuta la ventana de app
     
 previa = tk.Tk()
